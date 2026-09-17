@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Compresor de imágenes para campañas de Klaviyo. Redimensiona al ancho real de la plantilla y busca la calidad mínima que aún se ve idéntica. Todo en el navegador.">
+<meta name="description" content="Deja tus imágenes más ligeras para mandarlas por email, sin que se note en pantalla. Todo ocurre en tu navegador.">
 <style>
   :root{
     color-scheme:light;
@@ -81,6 +81,7 @@
   }
 
   *{box-sizing:border-box}
+  [hidden]{display:none !important}
   html,body{margin:0}
   body{
     background:var(--paper);
@@ -149,14 +150,29 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
   /* ---------- zona de soltar ---------- */
+  .quick{
+    margin-top:14px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;box-shadow:var(--shadow);
+  }
+  .qf{display:flex;flex-direction:column;gap:4px;flex:1 1 190px;min-width:0}
+  .qf > label{font-size:12.5px;color:var(--muted);font-weight:500}
+  .qhint{font-size:11.5px;color:var(--muted)}
+  .btn.more{margin-left:auto;align-self:flex-end;white-space:nowrap}
+  .btn.more::after{content:" ▾"}
+  .btn.more[aria-expanded="true"]::after{content:" ▴"}
+  .btn.big{padding:11px 22px;font-size:15px;font-weight:600}
+  .micro{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+  #adv{margin-top:10px}
+
   .drop{
-    margin-top:18px;border:1.5px dashed var(--line-strong);border-radius:var(--radius);
-    background:var(--surface);padding:30px 18px;text-align:center;
+    margin-top:22px;border:1.5px dashed var(--line-strong);border-radius:var(--radius);
+    background:var(--surface);padding:44px 18px;text-align:center;
     display:flex;flex-direction:column;align-items:center;gap:10px;
     transition:border-color .15s, background .15s;
   }
   .drop.over{border-color:var(--accent);background:var(--accent-soft)}
-  .drop h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:19px;margin:0;letter-spacing:-.01em}
+  .drop h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:clamp(20px,3.4vw,26px);margin:0;letter-spacing:-.015em}
   .drop p{margin:0;color:var(--muted);font-size:13px}
   .drop .acts{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:4px}
 
@@ -182,11 +198,23 @@
 
   .item{
     display:grid;
-    grid-template-columns:56px minmax(0,1.25fr) minmax(0,1.5fr) auto;
-    gap:14px;align-items:center;
+    grid-template-columns:56px minmax(0,1fr) auto auto;
+    gap:16px;align-items:center;
     padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);
     background:var(--surface);margin-bottom:8px;box-shadow:var(--shadow);
   }
+  .verdict{display:flex;align-items:baseline;gap:10px;justify-content:flex-end;white-space:nowrap}
+  .verdict .was{color:var(--muted);font-size:13px;text-decoration:line-through;text-decoration-thickness:1px}
+  .verdict .now{font-size:19px;font-weight:600}
+  .verdict .cut{
+    font-size:13px;font-weight:700;color:#fff;background:var(--good);
+    padding:2px 8px;border-radius:999px;
+  }
+  .detail{
+    grid-column:1 / -1;border-top:1px solid var(--line);margin-top:2px;padding-top:10px;
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  }
+  .detail .fsub{margin:0}
   .item.example{border-style:dashed}
   .thumb{
     inline-size:56px;block-size:56px;border-radius:7px;overflow:hidden;border:1px solid var(--line);
@@ -301,11 +329,12 @@
 
   @media (max-width:820px){
     .controls{grid-template-columns:1fr}
-    .item{grid-template-columns:48px minmax(0,1fr);grid-template-areas:"thumb meta" "figures figures" "acts acts";row-gap:10px}
-    .thumb{grid-area:thumb;inline-size:48px;block-size:48px}
-    .meta{grid-area:meta}
-    .figures{grid-area:figures}
-    .acts-col{grid-area:acts;flex-direction:row;flex-wrap:wrap}
+    .item{grid-template-columns:48px minmax(0,1fr);row-gap:10px}
+    .thumb{inline-size:48px;block-size:48px}
+    .verdict{grid-column:1 / -1;justify-content:flex-start}
+    .acts-col{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap}
+    .quick{gap:12px}
+    .btn.more{margin-left:0;width:100%}
   }
 </style>
 </head>
@@ -315,13 +344,8 @@
     <div>
       <div class="brand">
         <h1>Peso&nbsp;Pluma<span class="dot">.</span></h1>
-        <div class="badges">
-          <span class="badge">600 px · @2x</span>
-          <span class="badge">JPEG · PNG · WebP</span>
-          <span class="badge">Sin subidas</span>
-        </div>
       </div>
-      <p class="tagline">Compresor de imágenes para campañas de Klaviyo. Redimensiona al ancho real de la plantilla y busca el punto exacto donde el archivo deja de pesar sin que el ojo lo note.</p>
+      <p class="tagline">Deja tus imágenes más ligeras para mandarlas por email, sin que se note en pantalla.</p>
     </div>
     <button class="btn quiet tiny" id="theme-btn" type="button" title="Cambiar tema">◐ Tema</button>
   </div>
@@ -329,21 +353,57 @@
 
 <main class="wrap">
 
-  <section class="panel controls" aria-label="Ajustes de compresión">
+  <section class="drop" id="drop">
+    <h2>Arrastra aquí tus imágenes</h2>
+    <p>JPG, PNG, WebP, HEIC o GIF · todas las que quieras de una vez</p>
+    <div class="acts">
+      <button class="btn primary big" id="pick" type="button">Elegir imágenes</button>
+      <button class="btn quiet" id="demo" type="button">Ver un ejemplo</button>
+    </div>
+    <p class="micro">Se comprimen aquí, en tu navegador. No se sube nada a ningún sitio.</p>
+    <input type="file" id="file" accept="image/*" multiple hidden>
+  </section>
+
+  <section class="quick" aria-label="Ajustes principales">
+    <div class="qf">
+      <label for="preset">¿Dónde va la imagen?</label>
+      <select id="preset">
+        <option value="600" selected>Ancho completo del email</option>
+        <option value="700">Banner grande</option>
+        <option value="300">Media columna</option>
+        <option value="200">Un tercio de columna</option>
+        <option value="180">Logo de cabecera</option>
+        <option value="custom">Ancho a medida…</option>
+        <option value="0">No tocar el tamaño</option>
+      </select>
+      <span class="qhint" id="qhint">Sale a 1200 px</span>
+    </div>
+    <div class="qf">
+      <label for="outfmt">Formato</label>
+      <select id="outfmt">
+        <option value="" selected>El que menos pese</option>
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/png">PNG</option>
+        <option value="image/webp">WebP</option>
+      </select>
+      <span class="qhint" id="fhint">Elige solo</span>
+    </div>
+    <div class="qf">
+      <label for="fidelity">Calidad</label>
+      <select id="fidelity">
+        <option value="1.5">Máxima</option>
+        <option value="2.2" selected>Alta (recomendada)</option>
+        <option value="3.2">Media</option>
+        <option value="4.5">Máximo ahorro</option>
+      </select>
+      <span class="qhint">Casi siempre vale «Alta»</span>
+    </div>
+    <button class="btn quiet more" id="more" type="button" aria-expanded="false" aria-controls="adv">Más ajustes</button>
+  </section>
+
+  <section class="panel controls" id="adv" hidden aria-label="Ajustes avanzados">
     <div class="cgroup">
       <p class="ghead">Tamaño</p>
-      <div class="field">
-        <label for="preset">Dónde va la imagen</label>
-        <select id="preset">
-          <option value="600" selected>Imagen a ancho completo — 600 px</option>
-          <option value="700">Banner hero (plantilla ancha) — 700 px</option>
-          <option value="300">Bloque de dos columnas — 300 px</option>
-          <option value="200">Bloque de tres columnas — 200 px</option>
-          <option value="180">Logo de cabecera — 180 px</option>
-          <option value="custom">Ancho personalizado…</option>
-          <option value="0">Mantener el tamaño original</option>
-        </select>
-      </div>
       <div class="field" id="custom-wrap" hidden>
         <label for="customw">Ancho en el email (px)</label>
         <input type="number" id="customw" value="600" min="16" max="4000" step="10">
@@ -356,44 +416,20 @@
         <input type="checkbox" id="sharpen" checked>
         <span>Reenfocar al reducir<small>Solo sobre bordes reales; los fondos planos y su grano se quedan intactos.</small></span>
       </label>
-    </div>
-
-    <div class="cgroup">
-      <p class="ghead">Fidelidad</p>
       <div class="field">
-        <label for="fidelity">Cuánto puede alejarse del original</label>
-        <select id="fidelity">
-          <option value="1.5">Máxima — casi indistinguible al 100 %</option>
-          <option value="2.2" selected>Alta — recomendada para email</option>
-          <option value="3.2">Equilibrada — ahorro claro</option>
-          <option value="4.5">Máximo ahorro — para fondos y texturas</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="maxkb">Techo de peso por imagen (KB, opcional)</label>
+        <label for="maxkb">Techo de peso por imagen (KB)</label>
         <input type="number" id="maxkb" placeholder="sin techo" min="5" max="5000" step="5">
       </div>
-      <p class="fsub" style="margin:0">Cada imagen marca su propio listón: primero se mide lo mejor que puede dar, y luego se busca el archivo más ligero que se queda cerca. Una foto con grano y un fondo liso no se miden con la misma vara.</p>
     </div>
-
     <div class="cgroup">
-      <p class="ghead">Formato</p>
-      <div class="field">
-        <label for="outfmt">Formato de salida</label>
-        <select id="outfmt">
-          <option value="" selected>Automático — gana el más ligero</option>
-          <option value="image/jpeg">JPEG siempre</option>
-          <option value="image/png">PNG siempre — con paleta reducida</option>
-          <option value="image/webp">WebP siempre</option>
-        </select>
-      </div>
+      <p class="ghead">Compatibilidad</p>
       <label class="check" for="safeonly">
         <input type="checkbox" id="safeonly">
-        <span>Solo formatos que lee todo el mundo<small>Fuerza JPEG o PNG aunque WebP pese menos.</small></span>
+        <span>Solo formatos que lee todo el mundo<small>Descarta WebP, que Outlook clásico no muestra.</small></span>
       </label>
       <label class="check" for="keepalpha">
         <input type="checkbox" id="keepalpha" checked>
-        <span>Conservar transparencia<small>Usa PNG optimizado cuando la imagen la tiene.</small></span>
+        <span>Conservar transparencia<small>Usa PNG cuando la imagen la tiene.</small></span>
       </label>
       <div class="field">
         <span class="flabel" id="mattelab">Fondo al aplanar transparencias</span>
@@ -403,33 +439,28 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <section class="drop" id="drop">
-    <h2>Suelta aquí tus imágenes</h2>
-    <p>JPG, PNG, WebP, HEIC o GIF · varias a la vez · nada sale de este navegador</p>
-    <div class="acts">
-      <button class="btn primary" id="pick" type="button">Elegir archivos</button>
-      <button class="btn" id="demo" type="button">Probar con una imagen de ejemplo</button>
+    <div class="cgroup">
+      <p class="ghead">Cómo decide</p>
+      <p class="fsub" style="margin:0">Por cada imagen mide primero lo mejor que puede dar y luego baja la calidad hasta el último punto en que sigue viéndose igual. Una foto con grano y un fondo liso no se miden con la misma vara.</p>
+      <p class="fsub" style="margin:0">Si quieres juzgarlo tú, abre <b>Comparar</b> en cualquier resultado: verás el original y la comprimida con una cortinilla.</p>
     </div>
-    <input type="file" id="file" accept="image/*" multiple hidden>
   </section>
 
   <section class="results" id="results" hidden>
     <div class="rhead">
-      <h2 id="rtitle">Resultados</h2>
+      <h2 id="rtitle">Tus imágenes</h2>
       <span class="sub" id="rsub"></span>
     </div>
     <div id="list"></div>
     <div class="totals" id="totals" hidden>
       <div class="fig">
-        <div><span class="k">Antes</span><span class="v num" id="t-before">—</span></div>
-        <div><span class="k">Después</span><span class="v num good" id="t-after">—</span></div>
+        <div><span class="k">Pesaban</span><span class="v num" id="t-before">—</span></div>
+        <div><span class="k">Ahora</span><span class="v num good" id="t-after">—</span></div>
         <div><span class="k">Ahorro</span><span class="v num good" id="t-cut">—</span></div>
       </div>
       <div class="acts">
         <button class="btn quiet" id="clear" type="button">Vaciar</button>
-        <button class="btn primary" id="zip" type="button">Descargar todo (.zip)</button>
+        <button class="btn primary big" id="zip" type="button">Descargar todo</button>
       </div>
     </div>
   </section>
@@ -1145,139 +1176,149 @@
     const node = item.node;
     node.className = "item" + (item.isExample ? " example" : "");
     node.innerHTML = "";
+    const done = item.state === "done";
+    const c = done ? item.candidates[item.chosen] : null;
 
+    // --- miniatura ---
     const thumb = el("button","thumb");
     thumb.type = "button";
-    thumb.title = "Comparar original y comprimida";
     const img = el("img");
     img.alt = "";
     img.src = item.thumbUrl || "";
     thumb.appendChild(img);
-    thumb.addEventListener("click", ()=>openCompare(item));
-    if(item.state !== "done") thumb.style.cursor = "default";
+    if(done && !item.passthrough){
+      thumb.title = "Ver el antes y el después";
+      thumb.addEventListener("click", ()=>openCompare(item));
+    }else{
+      thumb.style.cursor = "default";
+    }
     node.appendChild(thumb);
 
+    // --- nombre ---
     const meta = el("div","meta");
     const nm = el("div","fname");
     nm.textContent = item.file.name;
     nm.title = item.file.name;
     meta.appendChild(nm);
     const sub = el("div","fsub");
-    const dims = item.srcW ? item.srcW + " × " + item.srcH + " px" : "";
-    sub.append(document.createTextNode([dims, fmtBytes(item.file.size)].filter(Boolean).join(" · ")));
-    if(item.isExample){ const t = el("span","tag"); t.textContent = "ejemplo"; sub.appendChild(t); }
-    if(item.alpha){ const t = el("span","tag"); t.textContent = "transparencia"; sub.appendChild(t); }
-    if(item.graphic){
-      const t = el("span","tag"); t.textContent = "ilustración";
-      t.title = "Pocos colores y zonas planas: sin reenfoque (amplificaría el grano del fondo) y con PNG compitiendo por el sitio.";
-      sub.appendChild(t);
+    if(done){
+      sub.append(document.createTextNode(item.outW + " × " + item.outH + " px · " + LABEL[c.type]));
+    }else if(item.srcW){
+      sub.append(document.createTextNode(item.srcW + " × " + item.srcH + " px"));
     }
+    if(item.isExample){ const t = el("span","tag"); t.textContent = "ejemplo"; sub.appendChild(t); }
+    if(item.note){ const t = el("span","tag"); t.textContent = item.note; sub.appendChild(t); }
     meta.appendChild(sub);
     node.appendChild(meta);
 
-    const figures = el("div","figures");
+    // --- el número que importa ---
+    const verdict = el("div","verdict");
     if(item.state === "error"){
-      const s = el("div","status");
-      s.innerHTML = '<span class="tag warn">error</span>';
-      s.append(document.createTextNode(" " + item.error));
-      figures.appendChild(s);
-    }else if(item.state !== "done"){
-      const s = el("div","status");
-      s.appendChild(el("span","spin"));
-      s.append(document.createTextNode(item.state === "queued" ? "En cola…" : "Buscando la calidad justa…"));
-      figures.appendChild(s);
+      const w = el("span","tag warn"); w.textContent = "no se pudo abrir";
+      w.title = item.error || "";
+      verdict.appendChild(w);
+    }else if(!done){
+      const st = el("span","status");
+      st.appendChild(el("span","spin"));
+      st.append(document.createTextNode(item.state === "queued" ? "En cola" : "Comprimiendo"));
+      verdict.appendChild(st);
     }else{
-      const c = item.candidates[item.chosen];
-      const cut = 1 - (c.blob.size / item.file.size);
-
-      const sizes = el("div","sizes");
-      const before = el("span","before num"); before.textContent = fmtBytes(item.file.size);
+      const cut = 1 - (c.blob.size / Math.max(item.file.size,1));
+      const was = el("span","was num"); was.textContent = fmtBytes(item.file.size);
       const arrow = el("span"); arrow.textContent = "→"; arrow.style.color = "var(--muted)";
-      const after = el("span","after num"); after.textContent = fmtBytes(c.blob.size);
-      sizes.append(before, arrow, after);
+      const now = el("span","now num"); now.textContent = fmtBytes(c.blob.size);
+      verdict.append(was, arrow, now);
       if(cut > 0.005){
-        const cc = el("span","cut num"); cc.textContent = "−" + Math.round(cut*100) + " %";
-        sizes.appendChild(cc);
-      }else if(!item.passthrough){
-        const cc = el("span","tag warn"); cc.textContent = "ya estaba optimizada";
-        sizes.appendChild(cc);
-      }
-      figures.appendChild(sizes);
-
-      const meter = el("div","meter");
-      const fill = el("i");
-      fill.style.width = clamp(Math.round((c.blob.size / Math.max(item.file.size,1)) * 100), 2, 100) + "%";
-      meter.appendChild(fill);
-      figures.appendChild(meter);
-
-      const fid = el("div","fid");
-      const dim = el("span"); dim.innerHTML = "<b>" + item.outW + " × " + item.outH + " px</b>";
-      fid.appendChild(dim);
-      if(!item.passthrough){
-        const f = el("span");
-        f.innerHTML = "SSIM <b class='num'>" + c.ssim.toFixed(3) + "</b>";
-        f.title = "Índice de similitud estructural frente al original, medido píxel a píxel a tamaño real. "
-          + "No es un porcentaje de calidad: el valor máximo alcanzable depende de cada imagen"
-          + (c.target ? " y en esta el listón estaba en " + c.target.toFixed(3) : "")
-          + ". Para juzgarlo con el ojo, usa «Comparar».";
-        fid.appendChild(f);
-        if(c.note){ const n = el("span"); n.textContent = c.note; fid.appendChild(n); }
-      }
-      if(item.note){ const n = el("span","tag"); n.textContent = item.note; fid.appendChild(n); }
-      if(c.forced){ const n = el("span","tag warn"); n.textContent = "forzado por el techo de peso"; fid.appendChild(n); }
-      if(c.q && c.q >= 0.93){
-        const n = el("span","tag warn");
-        n.textContent = "imagen muy detallada";
-        n.title = "Grano o detalle fino: esta imagen necesita calidad alta para no perder nada. Baja la fidelidad si quieres más ahorro.";
-        fid.appendChild(n);
-      }
-      if(item.alphaFlattened){ const n = el("span","tag warn"); n.textContent = "transparencia aplanada"; fid.appendChild(n); }
-      if(c.type === "image/png" && c.note === "sin pérdida" && !item.alpha){
-        const n = el("span","tag warn");
-        n.textContent = "la paleta no adelgaza esta imagen";
-        n.title = "Reducir colores rompería el degradado o el detalle. Para bajar de peso aquí hace falta JPEG o WebP.";
-        fid.appendChild(n);
-      }
-      figures.appendChild(fid);
-
-      if(item.candidates.length > 1){
-        const ch = el("div","choices");
-        item.candidates.forEach((cand, i) => {
-          const b = el("button","chip");
-          b.type = "button";
-          b.setAttribute("aria-pressed", String(i === item.chosen));
-          b.textContent = LABEL[cand.type] + " · " + fmtBytes(cand.blob.size);
-          b.title = "SSIM " + cand.ssim.toFixed(3) + (cand.note ? " · " + cand.note : "");
-          b.addEventListener("click", ()=>{ item.chosen = i; renderItem(item); renderTotals(); });
-          ch.appendChild(b);
-        });
-        figures.appendChild(ch);
+        const b = el("span","cut num"); b.textContent = "−" + Math.round(cut*100) + " %";
+        verdict.appendChild(b);
+      }else{
+        const b = el("span","tag"); b.textContent = "ya estaba al límite";
+        verdict.appendChild(b);
       }
     }
-    node.appendChild(figures);
+    node.appendChild(verdict);
 
+    // --- acciones ---
     const acts = el("div","acts-col");
-    if(item.state === "done"){
-      const dl = el("button","btn tiny");
+    if(done){
+      const dl = el("button","btn");
       dl.type = "button";
       dl.textContent = "Descargar";
       dl.addEventListener("click", async ()=>{
         dl.disabled = true;
         const ok = await saveFile(outName(item), item.candidates[item.chosen].blob);
         dl.disabled = false;
-        if(ok) dl.textContent = "Descargada";
-        setTimeout(()=>{ dl.textContent = "Descargar"; }, 2500);
+        if(ok){ dl.textContent = "Descargada"; setTimeout(()=>{ dl.textContent = "Descargar"; }, 2500); }
       });
       acts.appendChild(dl);
-      const cmp = el("button","btn tiny quiet");
-      cmp.type = "button";
-      cmp.textContent = "Comparar";
-      cmp.addEventListener("click", ()=>openCompare(item));
-      acts.appendChild(cmp);
     }
+    const toggle = el("button","btn tiny quiet");
+    toggle.type = "button";
+    toggle.textContent = "Detalles";
+    toggle.setAttribute("aria-expanded", item.open ? "true" : "false");
+    acts.appendChild(toggle);
+    node.appendChild(acts);
+
+    // --- el detalle, para quien lo quiera ---
+    const detail = el("div","detail");
+    detail.hidden = !item.open;
+    toggle.addEventListener("click", ()=>{
+      item.open = !item.open;
+      detail.hidden = !item.open;
+      toggle.setAttribute("aria-expanded", item.open ? "true" : "false");
+    });
+
+    if(done && !item.passthrough){
+      const cmp = el("button","btn tiny");
+      cmp.type = "button";
+      cmp.textContent = "Comparar con el original";
+      cmp.addEventListener("click", ()=>openCompare(item));
+      detail.appendChild(cmp);
+
+      if(item.candidates.length > 1){
+        const lab = el("span","fsub"); lab.textContent = "Otros formatos:";
+        detail.appendChild(lab);
+        item.candidates.forEach((cand, i) => {
+          const b = el("button","chip");
+          b.type = "button";
+          b.setAttribute("aria-pressed", String(i === item.chosen));
+          b.textContent = LABEL[cand.type] + " · " + fmtBytes(cand.blob.size);
+          b.addEventListener("click", ()=>{ item.chosen = i; renderItem(item); renderTotals(); });
+          detail.appendChild(b);
+        });
+      }
+
+      const tech = el("span","fsub");
+      const bits = [];
+      if(c.q) bits.push("calidad " + Math.round(c.q*100));
+      if(c.note && !c.q) bits.push(c.note);
+      bits.push("parecido con el original " + c.ssim.toFixed(3));
+      tech.textContent = bits.join(" · ");
+      tech.title = "El parecido se mide con SSIM: 1.000 sería idéntico. El valor máximo posible depende de cada imagen, "
+        + "por eso el mejor juez es «Comparar».";
+      detail.appendChild(tech);
+
+      if(item.alphaFlattened){
+        const t = el("span","tag warn"); t.textContent = "transparencia aplanada"; detail.appendChild(t);
+      }
+      if(c.forced){
+        const t = el("span","tag warn"); t.textContent = "recortado por el techo de peso"; detail.appendChild(t);
+      }
+      if(c.type === "image/png" && c.note === "sin pérdida" && !item.alpha){
+        const t = el("span","tag warn");
+        t.textContent = "el PNG no adelgaza esta imagen";
+        t.title = "Reducir colores rompería el degradado o el detalle. Aquí el peso solo baja con JPEG o WebP.";
+        detail.appendChild(t);
+      }
+    }else if(item.state === "error"){
+      const t = el("span","fsub"); t.textContent = item.error || "";
+      detail.appendChild(t);
+    }
+
     const rm = el("button","btn tiny quiet");
     rm.type = "button";
     rm.textContent = "Quitar";
+    rm.style.marginLeft = "auto";
     rm.addEventListener("click", ()=>{
       const i = items.indexOf(item);
       if(i >= 0) items.splice(i,1);
@@ -1286,8 +1327,8 @@
       renderTotals();
       if(!items.length) resultsEl.hidden = true;
     });
-    acts.appendChild(rm);
-    node.appendChild(acts);
+    detail.appendChild(rm);
+    node.appendChild(detail);
   }
 
   function renderTotals(){
@@ -1530,9 +1571,17 @@
     $("#custom-wrap").hidden = presetSel.value !== "custom";
     const o = readOpts();
     const note = $("#retina-note");
-    if(!o.cssW) note.textContent = "Sin redimensionar: se mantiene el tamaño original.";
-    else if(o.retina) note.textContent = "Sale a " + o.cssW*2 + " px y se muestra a " + o.cssW + " px.";
-    else note.textContent = "Sale a " + o.cssW + " px. En pantallas retina se verá algo blando.";
+    const hint = $("#qhint");
+    if(!o.cssW){
+      note.textContent = "Sin redimensionar: se mantiene el tamaño original.";
+      hint.textContent = "Se queda como está";
+    }else if(o.retina){
+      note.textContent = "Sale a " + o.cssW*2 + " px y se muestra a " + o.cssW + " px.";
+      hint.textContent = "Sale a " + o.cssW*2 + " px";
+    }else{
+      note.textContent = "Sale a " + o.cssW + " px. En pantallas retina se verá algo blando.";
+      hint.textContent = "Sale a " + o.cssW + " px";
+    }
   }
   presetSel.addEventListener("change", ()=>{ syncPreset(); reprocessAll(); });
   $("#retina").addEventListener("change", ()=>{ syncPreset(); reprocessAll(); });
@@ -1547,6 +1596,7 @@
     const safe = $("#safeonly");
     safe.disabled = forced;
     safe.closest(".check").style.opacity = forced ? ".45" : "";
+    $("#fhint").textContent = forced ? "Siempre " + LABEL[outfmt.value] : "Elige solo";
   }
   outfmt.addEventListener("change", ()=>{ syncFormat(); reprocessAll(); });
   syncFormat();
@@ -1565,6 +1615,14 @@
     }
   });
   syncPreset();
+
+  const moreBtn = $("#more"), adv = $("#adv");
+  moreBtn.addEventListener("click", ()=>{
+    const open = adv.hidden;
+    adv.hidden = !open;
+    moreBtn.setAttribute("aria-expanded", String(open));
+    moreBtn.firstChild.nodeValue = open ? "Menos ajustes" : "Más ajustes";
+  });
 
   $("#clear").addEventListener("click", ()=>{
     for(const i of items) if(i.thumbUrl) URL.revokeObjectURL(i.thumbUrl);
@@ -1603,8 +1661,8 @@
     btn.disabled = false;
   });
 
-  // arranca con el ejemplo ya procesado para que se vea qué hace
-  loadSample();
+  // La página abre limpia. El ejemplo está a un clic, pero quien llega con sus
+  // imágenes en la mano no tiene por qué encontrarse una fila que no ha pedido.
 })();
 </script>
 
